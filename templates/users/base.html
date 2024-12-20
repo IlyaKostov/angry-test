@@ -1,0 +1,172 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-100" data-bs-theme="auto">
+<head>
+    <script src="{% static 'js/color-models.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const interval = 2000;
+            let checkAuthInterval = null;
+
+            const telegramLoginBtn = document.getElementById('telegram-login-btn');
+            const modal = document.getElementById('telegramModal');
+
+            function checkAuthorization() {
+                fetch("{% url 'users:check_auth' %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.authenticated) {
+                            clearInterval(checkAuthInterval);
+                            checkAuthInterval = null;
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Ошибка проверки авторизации:', error));
+            }
+            
+            function fetchTelegramLoginUrl() {
+                fetch("{% url 'users:login_telegram' %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.url) {
+                            telegramLoginBtn.href = data.url;
+                            telegramLoginBtn.target = '_blank';
+                        } else {
+                            console.error("Не удалось получить URL для Telegram.");
+                        }
+                    })
+                    .catch(error => console.error("Ошибка при получении URL:", error));
+            }
+            
+            modal.addEventListener('shown.bs.modal', function () {
+                fetchTelegramLoginUrl();
+            });
+            
+            telegramLoginBtn.addEventListener('click', function () {
+                if (!checkAuthInterval) {
+                    checkAuthInterval = setInterval(checkAuthorization, interval);
+                }
+            });
+
+            modal.addEventListener('hidden.bs.modal', function () {
+                if (checkAuthInterval) {
+                    clearInterval(checkAuthInterval);
+                    checkAuthInterval = null;
+                }
+            });
+        });
+    </script>
+
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login with Telegram</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/cover/">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" crossorigin="anonymous">
+
+    <meta name="theme-color" content="#712cf9">
+
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            width: 100%;
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .btn-bd-primary {
+            --bd-violet-bg: #712cf9;
+            --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+
+            --bs-btn-font-weight: 600;
+            --bs-btn-color: var(--bs-white);
+            --bs-btn-bg: var(--bd-violet-bg);
+            --bs-btn-border-color: var(--bd-violet-bg);
+            --bs-btn-hover-color: var(--bs-white);
+            --bs-btn-hover-bg: #6528e0;
+            --bs-btn-hover-border-color: #6528e0;
+            --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+            --bs-btn-active-color: var(--bs-btn-hover-color);
+            --bs-btn-active-bg: #5a23c8;
+            --bs-btn-active-border-color: #5a23c8;
+        }
+
+        .bd-mode-toggle {
+            z-index: 1500;
+        }
+
+        .bd-mode-toggle .dropdown-menu .active .bi {
+            display: block !important;
+        }
+    </style>
+
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/cover.css' %}" rel="stylesheet">
+</head>
+
+<body class="d-flex h-100 text-center text-bg-dark">
+
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    {% include 'users/includes/inc_menu.html' %}
+    {% block content %}
+    {% endblock %}
+    <footer class="mt-auto text-white-50">
+        <p></p>
+    </footer>
+</div>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}" crossorigin="anonymous"></script>
+
+</body>
+</html>

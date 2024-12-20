@@ -1,0 +1,13 @@
+{% extends 'users/base.html' %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <main class="px-3">
+            <h1>Привет {{ user.first_name|default:user.username }}</h1>
+            <p class="lead">Поздравляем, ты авторизовался через Telegram.</p>
+
+        </main>
+    {% else %}
+        <h1>Привет!</h1>
+        <p class="lead">Для начала авторизуйся нажав на кнопку "Вход через Telegram".</p>
+    {% endif %}
+{% endblock %}
