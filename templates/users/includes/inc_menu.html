@@ -1,0 +1,36 @@
+
+<header class="mb-auto">
+    <div>
+        <h3 class="float-md-start mb-0">Login with Telegram</h3>
+        <nav class="nav nav-masthead justify-content-center float-md-end">
+            <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="{% url 'users:index' %}">Home</a>
+            {% if user.is_authenticated %}
+                <form id="logout-form" action="{% url 'users:logout' %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a class="nav-link fw-bold py-1 px-2" aria-current="page" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выход</a>
+            {% else %}
+                <a class="nav-link fw-bold py-1 px-0" href="#" data-bs-toggle="modal" data-bs-target="#telegramModal">
+                    Вход через telegram
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<div class="modal fade" id="telegramModal" tabindex="-1" aria-labelledby="telegramModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="telegramModalLabel">Вход через Telegram</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Чтобы войти, нажмите на кнопку ниже:</p>
+                <a id="telegram-login-btn" href="#" class="btn btn-primary">
+                    Войти через Telegram
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
